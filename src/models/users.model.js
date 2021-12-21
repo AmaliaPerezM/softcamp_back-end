@@ -2,7 +2,6 @@ const {Schema, model} = require("mongoose")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const { emailValidators, passwordValidators } = require("../utils/validators") 
-const userConfig = require("../config/users")
 const { getSecretKeyForUserType } = require("../utils/secrets")
 
 const UserModel = new Schema({
@@ -41,6 +40,8 @@ const UserModel = new Schema({
     type: {
         type: String,
     }
+}, {
+    timestamps: true
 })
 
 UserModel.methods.generateAuthToken = async function (userType) {
@@ -54,7 +55,7 @@ UserModel.methods.encryptPassword = async function () {
 }
 
 UserModel.methods.getPublicData = function () {
-    return (({name, email, phoneNumber}) => ({name, email, phoneNumber}))(this) 
+    return (({name, email, phoneNumber, type}) => ({name, email, phoneNumber, type}))(this) 
 }
 
 const User = new model("Users", UserModel)

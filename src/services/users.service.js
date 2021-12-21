@@ -6,9 +6,10 @@ const usersConfig = require("../config/users")
 
 class UserService extends EventEmitter {
     createNewUser = async (req ,res) => {
+        const isGodMode = req.headers["x-god"] === process.env.GOD_MODE_KEY
         const userData = (({name, email, password, phoneNumber}) => ({name, email ,password, phoneNumber}))(req.body)
         try {
-            const userType = req.user ? this.getCreateUserType(req.user.type, req.body.type) : this.getCeateUserTypeWithoutRequestUser(req.body.type)
+            const userType = req.user ? this.getCreateUserType(req.user.type, req.body.type) : this.getCeateUserTypeWithoutRequestUser(req.body.type, isGodMode)
             const user = await new User(userData)
             const token = await user.generateAuthToken(userType)
             await user.encryptPassword()
@@ -48,8 +49,9 @@ class UserService extends EventEmitter {
         return usersConfig.userTypes.external
     }
 
-    getCeateUserTypeWithoutRequestUser(userType) {
+    getCeateUserTypeWithoutRequestUser(userType, isGodMode) {
         if(!userType) return usersConfig.userTypes.external
+        if(isGodMode) return userType
         throw new Error("athorization error. Only valid users can create users with defined types")
     }
 

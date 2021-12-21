@@ -14,11 +14,11 @@ const isAuthFor = (authorizedTypes, config = { isCreateUser: false }) => async f
         req.token = token
         next()
     }catch(err){
-        if(token){
+        if(token) {
             const user = await User.findOne({tokens:token})
             if(user) {
                 const newTokens = user.tokens.filter(t => t !== token)
-                await User.updateOne({_id:user._id},{tokens:newTokens})
+                await User.updateOne({_id:user._id}, {tokens:newTokens})
             }
         }
         if(err) res.status(401).json("the user is not authorized")
@@ -27,13 +27,12 @@ const isAuthFor = (authorizedTypes, config = { isCreateUser: false }) => async f
 
 const getUserIdByAuthorizedTypes = (authorizedTypes, token) => {
     return authorizedTypes.reduce((prev, curr) => {
-        if(!prev){
-            try {
-                return jwt.verify(token, getSecretKeyForUserType(curr))
-            } catch (error) {
-                return undefined
-            }
-        } 
+        if (prev) return prev
+        try {
+            return jwt.verify(token, getSecretKeyForUserType(curr))
+        } catch (error) {               
+            return undefined
+        }
      }, undefined)
 }
 
