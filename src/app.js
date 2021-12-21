@@ -6,6 +6,8 @@ const helmet = require("helmet")
 const Db = require("./config/db")
 const championshipRouter = require("./controllers/championship.controller")
 const usersRouter = require("./controllers/users.controller")
+const teamsRouter = require("./controllers/teams.controller")
+const playersRouter = require("./controllers/players.controller")
 
 const dataBase = new Db(process.env.DB_URI || "mongodb://127.0.0.1:27017/softcamp")
 dataBase.registryEventListener("open", () => console.log("connection to database stablished"))
@@ -24,5 +26,7 @@ app.use(morgan("common"))
 app.use(helmet())
 app.use("/championships", championshipRouter )
 app.use("/users", usersRouter )
+app.use("/teams", teamsRouter )
+app.use("/players", playersRouter )
 
 module.exports = app
